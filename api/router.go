@@ -19,6 +19,6 @@ func (s *Server) setupRouter() {
 	api := s.router.Group("/api")
 	room := api.Group("/room")
 
-	room.POST("create", roomCtlr.CreateRoom)
+	room.GET("create", roomCtlr.CreateRoom)
 
 }

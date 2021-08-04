@@ -22,7 +22,7 @@ func main() {
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%s", config.RedisHost, config.RedisPort),
-		DB: 0,
+		DB:   0,
 	})
 
 	server := api.MakeServer(config, rdb)
