@@ -16,6 +16,9 @@ func (s *Server) setupRouter() {
 	roomSvc := service.NewRoomService(roomRepo)
 	roomCtlr := controller.NewRoomController(roomSvc)
 
+	// root := s.router.Group("/")
+	// root.GET(":room", roomCtlr.Connect)
+
 	api := s.router.Group("/api")
 	room := api.Group("/room")
 
