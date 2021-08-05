@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"github.com/mustafasegf/hompimpa/repository"
 )
 
@@ -59,4 +60,19 @@ func (r *Room) PublishToRoom(room, data string) (err error) {
 	ctx := context.Background()
 	err = r.repo.Pub.Publish(ctx, room, data).Err()
 	return
+}
+
+func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			_, message, err := ws.ReadMessage()
+			if err != nil {
+				return
+			}
+			r.PublishToRoom(room, string(message))
+		}
+	}
 }

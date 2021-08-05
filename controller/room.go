@@ -71,20 +71,7 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 		sub.Close()
 	}()
 
-	go func(c context.Context) {
-		for {
-			select {
-			case <-c.Done():
-				return
-			default:
-				_, message, err := ws.ReadMessage()
-				if err != nil {
-					return
-				}
-				ctrl.svc.PublishToRoom(room, string(message))
-			}
-		}
-	}(c)
+	go ctrl.svc.ReadMessage(ctx, ws, room)
 
 	for {
 		select {
