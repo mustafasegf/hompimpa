@@ -63,17 +63,20 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 	ticker := time.NewTicker(constant.PingPeriod)
 	c := context.Background()
 	c, cancel := context.WithCancel(c)
-
 	defer func() {
-		cancel()
 		ticker.Stop()
 		ws.Close()
 		sub.Close()
 	}()
 
 	go ctrl.svc.ReadMessage(c, ws, room)
+	go ctrl.svc.WriteMessage(c, ws, chn)
+	go ctrl.svc.Ping(c, cancel, ws, ticker)
 
 	for {
-		ctrl.svc.WriteMessage(c, ws, chn, ticker)
+		select {
+		case <-c.Done():
+			return
+		}
 	}
 }

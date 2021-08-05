@@ -83,11 +83,21 @@ func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string)
 	}
 }
 
-func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan *redis.Message, ticker *time.Ticker) {
+func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan *redis.Message) {
 	for {
 		select {
+		case <-ctx.Done():
+			return
 		case msg := <-chn:
 			ws.WriteJSON(WsData{Data: msg.String()})
+		}
+	}
+}
+
+func (r *Room) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocket.Conn, ticker *time.Ticker) {
+	defer cancel()
+	for {
+		select {
 		case <-ticker.C:
 			ws.SetWriteDeadline(time.Now().Add(constant.WriteWait))
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
