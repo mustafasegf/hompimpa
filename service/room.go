@@ -7,8 +7,14 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
+	"github.com/mustafasegf/hompimpa/constant"
 	"github.com/mustafasegf/hompimpa/repository"
 )
+
+type WsData struct {
+	Name string
+	Data interface{}
+}
 
 type Room struct {
 	repo *repository.Room
@@ -73,6 +79,20 @@ func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string)
 				return
 			}
 			r.PublishToRoom(room, string(message))
+		}
+	}
+}
+
+func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan *redis.Message, ticker *time.Ticker) {
+	for {
+		select {
+		case msg := <-chn:
+			ws.WriteJSON(WsData{Data: msg.String()})
+		case <-ticker.C:
+			ws.SetWriteDeadline(time.Now().Add(constant.WriteWait))
+			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+				return
+			}
 		}
 	}
 }

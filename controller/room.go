@@ -71,17 +71,9 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 		sub.Close()
 	}()
 
-	go ctrl.svc.ReadMessage(ctx, ws, room)
+	go ctrl.svc.ReadMessage(c, ws, room)
 
 	for {
-		select {
-		case msg := <-chn:
-			ws.WriteJSON(WsData{Data: msg.String()})
-		case <-ticker.C:
-			ws.SetWriteDeadline(time.Now().Add(constant.WriteWait))
-			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
-		}
+		ctrl.svc.WriteMessage(c, ws, chn, ticker)
 	}
 }
