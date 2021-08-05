@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/mustafasegf/hompimpa/repository"
 )
 
@@ -34,7 +35,7 @@ func (r *Room) GenerateRoom(n int) string {
 
 func (r *Room) CheckRoomExist(room string) (exist bool, err error) {
 	ctx := context.Background()
-	channels, err := r.repo.Rdb.PubSubChannels(ctx, room).Result()
+	channels, err := r.repo.Pub.PubSubChannels(ctx, room).Result()
 	if err != nil {
 		return
 	}
@@ -45,5 +46,17 @@ func (r *Room) CheckRoomExist(room string) (exist bool, err error) {
 		}
 	}
 	exist = false
+	return
+}
+
+func (r *Room) SubscribeToRoom(room string) (sub *redis.PubSub) {
+	ctx := context.Background()
+	sub = r.repo.Sub.Subscribe(ctx, room)
+	return
+}
+
+func (r *Room) PublishToRoom(room, data string) (err error) {
+	ctx := context.Background()
+	err = r.repo.Pub.Publish(ctx, room, data).Err()
 	return
 }

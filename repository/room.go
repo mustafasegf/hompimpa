@@ -5,11 +5,13 @@ import (
 )
 
 type Room struct {
-	Rdb *redis.Client
+	Pub *redis.Client
+	Sub *redis.Client
 }
 
-func NewRoomRepo(rdb *redis.Client) *Room {
+func NewRoomRepo(pub *redis.Client, sub *redis.Client) *Room {
 	return &Room{
-		Rdb: rdb,
+		Pub: pub,
+		Sub: sub,
 	}
 }

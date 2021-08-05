@@ -12,12 +12,12 @@ type Route struct {
 }
 
 func (s *Server) setupRouter() {
-	roomRepo := repository.NewRoomRepo(s.rdb)
+	roomRepo := repository.NewRoomRepo(s.pub, s.sub)
 	roomSvc := service.NewRoomService(roomRepo)
-	roomCtlr := controller.NewRoomController(roomSvc)
+	roomCtlr := controller.NewRoomController(roomSvc, s.upgr)
 
-	// root := s.router.Group("/")
-	// root.GET(":room", roomCtlr.Connect)
+	root := s.router.Group("/")
+	root.GET(":room", roomCtlr.Connect)
 
 	api := s.router.Group("/api")
 	room := api.Group("/room")

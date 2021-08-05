@@ -20,11 +20,16 @@ func main() {
 		log.Fatal("cannot load config:", err)
 	}
 
-	rdb := redis.NewClient(&redis.Options{
+	pub := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%s", config.RedisHost, config.RedisPort),
 		DB:   0,
 	})
 
-	server := api.MakeServer(config, rdb)
+	sub := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%s", config.RedisHost, config.RedisPort),
+		DB:   0,
+	})
+
+	server := api.MakeServer(config, pub, sub)
 	server.RunServer()
 }

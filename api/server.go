@@ -2,24 +2,35 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"github.com/mustafasegf/hompimpa/util"
 )
 
 type Server struct {
 	config util.Config
 	router *gin.Engine
-	rdb    *redis.Client
+	pub    *redis.Client
+	sub    *redis.Client
+	upgr   websocket.Upgrader
 }
 
-func MakeServer(config util.Config, rdb *redis.Client) Server {
+func MakeServer(config util.Config, pub *redis.Client, sub *redis.Client) Server {
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
 	router := gin.Default()
 	server := Server{
 		config: config,
 		router: router,
-		rdb:    rdb,
+		pub:    pub,
+		sub:    sub,
+		upgr:   upgrader,
 	}
 	return server
 }
