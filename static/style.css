@@ -54,71 +54,23 @@ ul {
 li {
   padding-right: 2em;
 }
-#navbar {
-  min-height: 70px;
-  margin: 0px var(--margin);
-}
-#navbar a {
-  text-decoration: none;
-  color: var(--color);
-  height: fit-content;
-  margin: auto;
-}
-#hero-section {
-  width: 100vw;
-  height: auto;
-  background: var(--seccond-bg);
-  width: 100%;
-}
-#about {
-  height: auto;
-  background: var(--main-bg);
-}
-#projects {
-  height: auto;
-  background: var(--main-bg);
-}
+
 #experience {
   height: 100vh;
   background: var(--gradien);
   color: #ffffff;
 }
-#contact {
-  height: auto;
-  background: var(--seccond-bg);
-}
-.footer {
-  height: 100px;
-  background: #353841;
-}
+
 .content {
   height: calc(100% - 200px);
   margin: 0px var(--margin);
   padding: 100px 0;
 }
-.footer-content {
-  margin: 0px calc(var(--margin) * 0.3);
-  padding: 10px 0;
-}
+
 .inner-content {
   margin: 0px var(--inner);
 }
-.hero-img {
-  max-height: 480px;
-  max-width: 420px;
-  box-sizing: border-box;
-  width: 100%;
-  margin: auto;
-  border-width: 20px;
-  border-style: solid;
-  border-image: var(--gradien);
-  border-image-slice: 1;
-}
-.project-img {
-  /* width: max(640px, 100%); */
-  width: 80vmin;
-  margin: auto;
-}
+
 .logo {
   width: 64px;
   height: 64px;
@@ -156,44 +108,18 @@ li {
   column-gap: 2em;
   row-gap: 5em;
   justify-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
-.nav-grid {
-  display: grid;
-  justify-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(6em, 1fr));
-}
-#contact .grid {
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-#about .grid {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-#projects .grid {
-  grid-template-columns: 1fr;
-}
-#about ul {
-  columns: var(--column);
-}
-#about li {
-  min-width: 16em;
-}
+
 .child {
   align-content: center;
   vertical-align: middle;
 }
-#skills .child:last-child {
-  grid-column-start: var(--orphan);
-}
-#projects .child {
-  max-width: 700px;
-}
+
 .space {
-  padding-bottom: 100px;
+  padding-bottom: 50px;
 }
-.red {
-  color: red;
-}
+
 .inline {
   display: inline-block;
 }
