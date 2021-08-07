@@ -122,6 +122,10 @@ func (r *Room) AddRoomData(room string, user entity.User, oldRoom *entity.RoomDa
 	users[user.Name] = user
 	oldRoom.Users = users
 
+	if len(users) > 2 && r.CalculateGame(users) {
+		oldRoom.Status = "all"
+	}
+
 	roomString, err := json.Marshal(oldRoom)
 	if err != nil {
 		err = fmt.Errorf("marshal: %v", err)
@@ -144,6 +148,10 @@ func (r *Room) RemoveUser(room, name string) (err error) {
 	delete(users, name)
 	roomData.Users = users
 
+	if len(users) > 2 && r.CalculateGame(users) {
+		roomData.Status = "all"
+	}
+
 	ctx := context.Background()
 	if len(users) == 0 {
 		fmt.Println("deleted")
@@ -158,6 +166,17 @@ func (r *Room) RemoveUser(room, name string) (err error) {
 	}
 
 	r.repo.Pub.Set(ctx, room, roomString, 0)
+	return
+}
+
+func (r *Room) CalculateGame(users map[string]entity.User) (valid bool) {
+	for _, user := range users {
+		if user.Hand == nil {
+			valid = false
+			break
+		}
+	}
+	valid = true
 	return
 }
 

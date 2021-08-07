@@ -77,38 +77,3 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 		}
 	}
 }
-
-/* client 1 connect to ws
-send {name: test1}
-saved to rejson
-get data from rejson
-send {
-	status: waiting,
-	owner: test1,
-	users: [
-		{
-			name: test1,
-			hand: null
-		}
-	]
-}
-
-client 2 connected
-send {name: test2}
-saved to rejson
-get data from rejson
-send {
-	status: waiting,
-	leader: test1,
-	users: [
-		{
-			name: test1,
-			hand: null
-		},
-		{
-			name: test2,
-			hand: null
-		}
-	]
-}
-*/
