@@ -2,7 +2,7 @@ version: "3.8"
 services:
   redis:
     container_name: hompimpa-redis
-    image: redislabs/rejson:latest
+    image: redis:6.2.4-alpine
     # command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: always
     # environment:

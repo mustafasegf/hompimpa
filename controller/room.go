@@ -11,11 +11,6 @@ import (
 	"github.com/mustafasegf/hompimpa/service"
 )
 
-type WsData struct {
-	Name string
-	Data interface{}
-}
-
 type Room struct {
 	svc  *service.Room
 	upgr websocket.Upgrader
@@ -47,7 +42,7 @@ func (ctrl *Room) CreateRoom(ctx *gin.Context) {
 func (ctrl *Room) Connect(ctx *gin.Context) {
 	room := ctx.Param("room")
 	if len(room) != 6 {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "wrong length"})
 		return
 	}
 
@@ -80,3 +75,38 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 		}
 	}
 }
+
+/* client 1 connect to ws
+send {name: test1}
+saved to rejson
+get data from rejson
+send {
+	status: waiting,
+	owner: test1,
+	users: [
+		{
+			name: test1,
+			hand: null
+		}
+	]
+}
+
+client 2 connected
+send {name: test2}
+saved to rejson
+get data from rejson
+send {
+	status: waiting,
+	leader: test1,
+	users: [
+		{
+			name: test1,
+			hand: null
+		},
+		{
+			name: test2,
+			hand: null
+		}
+	]
+}
+*/

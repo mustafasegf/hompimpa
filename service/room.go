@@ -2,19 +2,18 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"github.com/mustafasegf/hompimpa/constant"
+	"github.com/mustafasegf/hompimpa/entity"
 	"github.com/mustafasegf/hompimpa/repository"
 )
-
-type WsData struct {
-	Name string
-	Data interface{}
-}
 
 type Room struct {
 	repo *repository.Room
@@ -68,17 +67,110 @@ func (r *Room) PublishToRoom(room, data string) (err error) {
 	return
 }
 
+func (r *Room) GetRoomData(room, data string) (roomData *entity.RoomData, err error) {
+	ctx := context.Background()
+	res := r.repo.Pub.Get(ctx, room)
+	if res.Err() != nil {
+		err = fmt.Errorf("get: %v", err)
+		return
+	}
+	err = nil
+	fmt.Printf("res: %s\n", res.String())
+	raw, err := res.Bytes()
+	if err != nil {
+		err = fmt.Errorf("byte: %v", err)
+		return
+	}
+	fmt.Printf("raw: %s\n", raw)
+
+	roomData = &entity.RoomData{}
+	err = json.Unmarshal(raw, roomData)
+	if err != nil {
+		err = fmt.Errorf("unmarshall: %v", err)
+		roomData = nil
+		return
+	}
+	fmt.Printf("roomData: %#v\n", roomData)
+	return
+}
+
+func (r *Room) CreateRoomData(room, name string) (roomData *entity.RoomData, err error) {
+	users := map[string]entity.User{
+		name: {
+			Name: name,
+		},
+	}
+
+	roomData = &entity.RoomData{
+		Status: "waiting",
+		Owner:  name,
+		Users:  users,
+	}
+
+	roomString, err := json.Marshal(roomData)
+	if err != nil {
+		err = fmt.Errorf("marshal: %v", err)
+		roomData = nil
+		return
+	}
+
+	ctx := context.Background()
+	r.repo.Pub.Set(ctx, room, roomString, 0)
+	return
+}
+
+func (r *Room) AddRoomData(room, name string, oldRoom *entity.RoomData) (roomData *entity.RoomData, err error) {
+	users := oldRoom.Users
+	users[name] = entity.User{Name: name}
+	oldRoom.Users = users
+
+	roomString, err := json.Marshal(oldRoom)
+	if err != nil {
+		err = fmt.Errorf("marshal: %v", err)
+		return
+	}
+
+	fmt.Printf("room string: %s err:%v\n", roomString, err)
+	ctx := context.Background()
+	r.repo.Pub.Set(ctx, room, roomString, 0)
+	roomData = oldRoom
+	return
+}
+
 func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
-			_, message, err := ws.ReadMessage()
+			_, msg, err := ws.ReadMessage()
 			if err != nil {
 				return
 			}
-			r.PublishToRoom(room, string(message))
+			userData := entity.User{}
+			json.Unmarshal(msg, &userData)
+
+			// get room
+			roomData, err := r.GetRoomData(room, string(msg))
+			if err != nil {
+				log.Println("get room:", err)
+			}
+
+			if roomData != nil {
+				roomData, err = r.AddRoomData(room, userData.Name, roomData)
+				if err != nil {
+					log.Println("add room data:", err)
+				}
+			} else {
+				roomData, err = r.CreateRoomData(room, userData.Name)
+				if err != nil {
+					log.Println("create room data:", err)
+				}
+			}
+
+			roomByte, err := json.Marshal(roomData)
+			// send room info
+			r.PublishToRoom(room, string(roomByte))
 		}
 	}
 }
@@ -89,7 +181,7 @@ func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan 
 		case <-ctx.Done():
 			return
 		case msg := <-chn:
-			ws.WriteJSON(WsData{Data: msg.String()})
+			ws.WriteJSON(msg)
 		}
 	}
 }
