@@ -1,3 +1,5 @@
-# go-shotener
+# hompimpa
 
-simple golang url shotener for practice
+simple app for playing indonesian traditional game hompimpa
+
+this app use redis pubsub and websocket
