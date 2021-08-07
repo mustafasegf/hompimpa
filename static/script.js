@@ -17,7 +17,7 @@ var userData = {};
 
 const connectWs = (e) => {
   let wsBase = base.replace("https", "ws");
-  wsBase = base.replace("http", "ws");
+  wsBase = wsBase.replace("http", "ws");
   wsBase = wsBase.substring(0, wsBase.length - 6);
 
   const form = document.getElementById("form");
