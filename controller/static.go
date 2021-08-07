@@ -18,5 +18,10 @@ func (server *Static) Index(ctx *gin.Context) {
 }
 
 func (server *Static) RenderRoom(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "room.html", gin.H{"id": ctx.Param("room")})
+	room := ctx.Param("room")
+	if len(room) != 6 {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/")
+		return
+	}
+	ctx.HTML(http.StatusOK, "room.html", gin.H{"id": room})
 }

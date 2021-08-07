@@ -3,31 +3,24 @@ services:
   redis:
     container_name: hompimpa-redis
     image: redis:6.2.4-alpine
-    # command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: always
-    # environment:
-    #   - PASSWORD=${REDIS_PASSWORD}
-    # networks:
-    #   - hompimpa
-    ports:
-      - "6379:6379"
+    networks:
+      - hompimpa
 
-  # server:
-  #   container_name: server-hompimpa
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${SERVER_PORT}:${SERVER_PORT}"
-  #   depends_on:
-  #     - db
-  #     - redis
-  #   environment:
-  #     - DB_HOST=db
-  #     - REDIS_HOST=redis
-  #   networks:
-  #     - shortener
-  #   command: ["/app/main"]
+  server:
+    container_name: server-hompimpa
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    networks:
+      - hompimpa
+    command: ["/app/main"]
 
 networks:
   hompimpa:

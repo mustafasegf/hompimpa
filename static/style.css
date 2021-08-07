@@ -86,7 +86,7 @@ li {
   display: inline-block;
   padding: 0.5em 2em;
   margin: 1em 0;
-  background: var(--gradien);
+  background: rgba(167, 45, 147, 0.582);
   text-decoration: none;
   text-transform: uppercase;
   width: fit-content;

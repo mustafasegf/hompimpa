@@ -36,12 +36,35 @@ const connectWs = (e) => {
     userData = JSON.parse(evt.data);
     userData = JSON.parse(userData.Payload);
     if (userData.status === "all") {
+      let up = [];
+      let down = [];
+      for (const [key, value] of Object.entries(userData.users)) {
+        if (value.hand) {
+          up.push(key);
+        } else {
+          down.push(key);
+        }
+      }
+      if (up.length !== 1 && down.length !== 1) {
+        document.getElementById("result").innerHTML = `no one win`;
+      } else if (up.length === 1) {
+        document.getElementById("result").innerHTML = `${up[0]} wins!`;
+      } else {
+        document.getElementById("result").innerHTML = `${down[0]} wins!`;
+      }
     }
     let doc = document.getElementById("data");
-    document.getElementById("head").innerHTML = `
-    <h3>choose</h3>
-    <h1 style="display: inline" onclick="sendHand(true)">✋🏻</h1>
-    <h1 style="display: inline" onclick="sendHand(false)">✋🏿</h1>`;
+    if (userData.users[userName].hand === undefined) {
+      document.getElementById("head").innerHTML = `
+      <h3>choose</h3>
+      <h1 style="display: inline" onclick="sendHand(true)">✋🏻</h1>
+      <h1 style="display: inline" onclick="sendHand(false)">✋🏿</h1>`;
+    } else {
+      document.getElementById("head").innerHTML = `
+      <h3>you choose</h3>
+      <h1 style="display: inline"">${userData.users[userName].hand === true ? "✋🏻" : "✋🏿"}</h1>`;
+    }
+
     doc.innerHTML = ``;
     for (const [key, value] of Object.entries(userData.users)) {
       let temp = `
@@ -66,5 +89,11 @@ const connectWs = (e) => {
 };
 
 const sendHand = (data) => {
-  ws.send(JSON.stringify({ name: userName, name: data }));
+  ws.send(JSON.stringify({ name: userName, hand: data }));
 };
+
+const generateRoom = async () => {
+  const res = await fetch(`${base}api/room/create`)
+  const data = await res.json()
+  window.location = `${base}${data.room}`;
+}
