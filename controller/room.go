@@ -64,9 +64,11 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 		sub.Close()
 	}()
 
+	_, name, _ := ws.ReadMessage()
+
 	go ctrl.svc.ReadMessage(c, ws, room)
 	go ctrl.svc.WriteMessage(c, ws, chn)
-	go ctrl.svc.Ping(c, cancel, ws, ticker)
+	go ctrl.svc.Ping(c, cancel, ws, ticker, room, string(name))
 
 	for {
 		select {

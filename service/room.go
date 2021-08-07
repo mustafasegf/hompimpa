@@ -74,14 +74,12 @@ func (r *Room) GetRoomData(room, data string) (roomData *entity.RoomData, err er
 		err = fmt.Errorf("get: %v", err)
 		return
 	}
-	err = nil
-	fmt.Printf("res: %s\n", res.String())
+
 	raw, err := res.Bytes()
 	if err != nil {
 		err = fmt.Errorf("byte: %v", err)
 		return
 	}
-	fmt.Printf("raw: %s\n", raw)
 
 	roomData = &entity.RoomData{}
 	err = json.Unmarshal(raw, roomData)
@@ -90,7 +88,7 @@ func (r *Room) GetRoomData(room, data string) (roomData *entity.RoomData, err er
 		roomData = nil
 		return
 	}
-	fmt.Printf("roomData: %#v\n", roomData)
+
 	return
 }
 
@@ -119,9 +117,9 @@ func (r *Room) CreateRoomData(room, name string) (roomData *entity.RoomData, err
 	return
 }
 
-func (r *Room) AddRoomData(room, name string, oldRoom *entity.RoomData) (roomData *entity.RoomData, err error) {
+func (r *Room) AddRoomData(room string, user entity.User, oldRoom *entity.RoomData) (roomData *entity.RoomData, err error) {
 	users := oldRoom.Users
-	users[name] = entity.User{Name: name}
+	users[user.Name] = user
 	oldRoom.Users = users
 
 	roomString, err := json.Marshal(oldRoom)
@@ -130,10 +128,36 @@ func (r *Room) AddRoomData(room, name string, oldRoom *entity.RoomData) (roomDat
 		return
 	}
 
-	fmt.Printf("room string: %s err:%v\n", roomString, err)
 	ctx := context.Background()
 	r.repo.Pub.Set(ctx, room, roomString, 0)
 	roomData = oldRoom
+	return
+}
+
+func (r *Room) RemoveUser(room, name string) (err error) {
+	roomData, err := r.GetRoomData(room, name)
+	if err != nil {
+		err = fmt.Errorf("remove: %v", err)
+		return
+	}
+	users := roomData.Users
+	delete(users, name)
+	roomData.Users = users
+
+	ctx := context.Background()
+	if len(users) == 0 {
+		fmt.Println("deleted")
+		err = r.repo.Pub.Del(ctx, room).Err()
+		return
+	}
+
+	roomString, err := json.Marshal(roomData)
+	if err != nil {
+		err = fmt.Errorf("marshal: %v", err)
+		return
+	}
+
+	r.repo.Pub.Set(ctx, room, roomString, 0)
 	return
 }
 
@@ -156,8 +180,9 @@ func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string)
 				log.Println("get room:", err)
 			}
 
+			// add data
 			if roomData != nil {
-				roomData, err = r.AddRoomData(room, userData.Name, roomData)
+				roomData, err = r.AddRoomData(room, userData, roomData)
 				if err != nil {
 					log.Println("add room data:", err)
 				}
@@ -186,8 +211,12 @@ func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan 
 	}
 }
 
-func (r *Room) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocket.Conn, ticker *time.Ticker) {
-	defer cancel()
+func (r *Room) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocket.Conn, ticker *time.Ticker, room, name string) {
+	defer func() {
+		r.RemoveUser(room, name)
+		fmt.Printf("%s disconected\n", name)
+		cancel()
+	}()
 	for {
 		select {
 		case <-ticker.C:
