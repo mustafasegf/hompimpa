@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>hompimpa</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="static/style.css" />
     <script src="static/script.js"></script>
     <script>
       const roomId = "{{ .id }}";
@@ -19,11 +18,27 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
     />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
+    />
   </head>
   <body>
-    <!-- <div id="experience">
-      <div class="content">
-        <div class="align-center space"> -->
+    <style>
+      .github-fork-ribbon:before {
+        background-color: #333;
+      }
+    </style>
+    <a
+      class="github-fork-ribbon"
+      target="_blank"
+      href="https://github.com/mustafasegf/hompimpa"
+      data-ribbon="Check on Github"
+      title="Fork me on GitHub"
+      >Check on Github</a
+    >
+
     <div class="container d-flex vh-100">
       <div class="row align-self-center w-100">
         <div class="col-6 mx-auto">
@@ -42,8 +57,5 @@
         </div>
       </div>
     </div>
-    <!-- </div>
-      </div>
-    </div> -->
   </body>
 </html>
