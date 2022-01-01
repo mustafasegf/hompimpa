@@ -3,29 +3,47 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>hompimpa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>hompimpa</title>
     <link rel="stylesheet" type="text/css" media="screen" href="static/style.css" />
-    <link rel="shortcut icon" type="image/jpg" href="static/favicon.ico" />
     <script src="static/script.js"></script>
     <script>
       const roomId = "{{ .id }}";
     </script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@forevolve/bootstrap-dark@1.0.0/dist/css/bootstrap-dark.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
+    />
   </head>
   <body>
-    <div id="experience">
+    <!-- <div id="experience">
       <div class="content">
-        <div class="align-center space">
-          <form action="" id="form" onsubmit="connectWs(event);">
-            <label for="name">name</label>
-            <input type="text" name="name" />
-            <input type="submit" name="submit" />
-          </form>
-          <div id="head" class="space"></div>
-          <h3 id="result"></h3>
-          <div id="data" class="grid"></div>
+        <div class="align-center space"> -->
+    <div class="container d-flex vh-100">
+      <div class="row align-self-center w-100">
+        <div class="col-6 mx-auto">
+          <div>
+            <form action="" id="form" onsubmit="connectWs(event);">
+              <div class="form-group">
+                <label for="name">Input Your Name</label>
+                <input type="text" name="name" class="form-control" />
+              </div>
+              <input type="submit" name="submit" class="btn btn-dark" />
+            </form>
+            <div id="head" class="space"></div>
+            <h3 id="result"></h3>
+            <div id="data" class="container d-flex"></div>
+          </div>
         </div>
       </div>
     </div>
+    <!-- </div>
+      </div>
+    </div> -->
   </body>
 </html>

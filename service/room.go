@@ -122,7 +122,6 @@ func (r *Room) AddRoomData(room string, user entity.User, oldRoom *entity.RoomDa
 	users[user.Name] = user
 	oldRoom.Users = users
 
-	fmt.Printf(">>>>>>>>>>>>>> %#v\n", oldRoom)
 	if len(users) > 2 && r.CalculateGame(users) {
 		oldRoom.Status = "all"
 	}
@@ -155,7 +154,6 @@ func (r *Room) RemoveUser(room, name string) (err error) {
 
 	ctx := context.Background()
 	if len(users) == 0 {
-		fmt.Println("deleted")
 		err = r.repo.Pub.Del(ctx, room).Err()
 		return
 	}

@@ -67,7 +67,7 @@ const connectWs = (e) => {
     doc.innerHTML = ``;
     for (const [key, value] of Object.entries(userData.users)) {
       let temp = `
-      <div>
+      <div class="mx-4">
         <p>${key}</p>
         ${
           userData.status === "all"

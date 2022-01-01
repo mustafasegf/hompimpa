@@ -1,36 +1,11 @@
-:root {
-  /* white mode */
-  /* --main-bg: #ffffff;
-    --seccond-bg: #f9f9ff;
-    --color: #000000; */
-  /* --gradien: linear-gradient(90deg, rgba(132, 144, 255, 1) 0%, rgba(98, 189, 252, 1) 100%); */
-
-  /* dark mode */
-  --main-bg: #181a1b;
-  --seccond-bg: #131516;
-  --color: #d8d4cf;
-  --gradien: linear-gradient(90deg, rgb(102, 81, 196) 0%, rgb(47, 131, 190) 100%);
-
-  --margin: calc(50vw - 442px);
-  --inner: 10em;
-  --orphan: 2;
-  --contact-size: 180px;
-  --column: 2;
-}
-
 html {
   scroll-behavior: smooth;
 }
-svg {
-  fill: var(--color);
-  vertical-align: bottom;
-}
+
 body {
   font-family: "Poppins", sans-serif;
   margin: 0px;
   font-size: 14px;
-  color: var(--color);
-  background: var(--main-bg);
 }
 h1 {
   font-size: 60px;
@@ -67,90 +42,10 @@ li {
   padding: 100px 0;
 }
 
-.inner-content {
-  margin: 0px var(--inner);
-}
-
-.logo {
-  width: 64px;
-  height: 64px;
-}
-#contact .logo {
-  width: var(--contact-size);
-  height: var(--contact-size);
-  display: block;
-  margin: auto;
-  text-align: center;
-}
-.btn {
-  display: inline-block;
-  padding: 0.5em 2em;
-  margin: 1em 0;
-  background: rgba(167, 45, 147, 0.582);
-  text-decoration: none;
-  text-transform: uppercase;
-  width: fit-content;
-  color: #ffffff;
-}
 .align-center {
   text-align: center;
-}
-.align-left {
-  text-align: left;
-  justify-items: baseline !important;
-}
-.link {
-  text-decoration: none;
-  color: var(--color);
-}
-.grid {
-  display: grid;
-  column-gap: 2em;
-  row-gap: 5em;
-  justify-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-}
-
-.child {
-  align-content: center;
-  vertical-align: middle;
 }
 
 .space {
   padding-bottom: 50px;
-}
-
-.inline {
-  display: inline-block;
-}
-.vertical {
-  margin-right: 10em;
-}
-/* Smartphones (portrait and landscape) ----------- */
-@media only screen and (max-device-width: 768px) {
-  :root {
-    --margin: 1.5em;
-    --inner: 0em;
-    --orphan: 1;
-    --contact-size: 100px;
-    --column: 1;
-  }
-}
-
-/* iPads (portrait and landscape) ----------- */
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-  :root {
-    --margin: 5em;
-    --inner: 2em;
-    --orphan: 2;
-    --contact-size: 120px;
-    --column: 1;
-  }
-}
-
-/* Large screens ----------- */
-@media only screen and (min-width: 1824px) {
-  :root {
-    --margin: max(400px, calc(50vw - 550px));
-  }
 }

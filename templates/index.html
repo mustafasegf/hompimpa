@@ -5,22 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>hompimpa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" media="screen" href="static/style.css" />
     <link rel="shortcut icon" type="image/jpg" href="static/favicon.ico" />
     <script src="static/script.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@forevolve/bootstrap-dark@1.0.0/dist/css/bootstrap-dark.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
+    />
   </head>
   <body>
-    <div id="experience">
-      <div class="content">
-        <div class="align-center space">
-          <h1>hompimpa</h1>
-          <p>this only suffice as fun project</p>
-          <p class="btn" onclick="generateRoom()">Create Room</p>
-          <form action="" id="form" onsubmit="joinRoom(event);">
-            <label for="room">room</label>
-            <input type="text" name="room" />
-            <input type="submit" name="submit" />
-          </form>
+    <div class="container d-flex vh-100">
+      <div class="row align-self-center w-100">
+        <div class="col-6 mx-auto">
+          <div class="align-center space">
+            <h1>hompimpa</h1>
+            <p>this only suffice as fun project</p>
+            <p class="btn btn-secondary" onclick="generateRoom()">Create Room</p>
+            <form action="" id="form" onsubmit="joinRoom(event);">
+              <div class="form-group">
+                <label for="room">room</label>
+                <input type="text" name="room" class="form-control" />
+              </div>
+              <input type="submit" name="submit" class="btn btn-dark" />
+            </form>
+          </div>
         </div>
       </div>
     </div>
