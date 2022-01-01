@@ -1,4 +1,4 @@
-package service
+package room
 
 import (
 	"context"
@@ -10,17 +10,15 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
-	"github.com/mustafasegf/hompimpa/constant"
 	"github.com/mustafasegf/hompimpa/entity"
-	"github.com/mustafasegf/hompimpa/repository"
 )
 
-type Room struct {
-	repo *repository.Room
+type Service struct {
+	repo *Repo
 }
 
-func NewRoomService(repo *repository.Room) *Room {
-	return &Room{
+func NewService(repo *Repo) *Service {
+	return &Service{
 		repo: repo,
 	}
 }
@@ -31,7 +29,7 @@ func init() {
 
 var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
-func (r *Room) GenerateRoom(n int) string {
+func (r *Service) GenerateRoom(n int) string {
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
@@ -39,7 +37,7 @@ func (r *Room) GenerateRoom(n int) string {
 	return string(b)
 }
 
-func (r *Room) CheckRoomExist(room string) (exist bool, err error) {
+func (r *Service) CheckRoomExist(room string) (exist bool, err error) {
 	ctx := context.Background()
 	channels, err := r.repo.Pub.PubSubChannels(ctx, room).Result()
 	if err != nil {
@@ -55,19 +53,19 @@ func (r *Room) CheckRoomExist(room string) (exist bool, err error) {
 	return
 }
 
-func (r *Room) SubscribeToRoom(room string) (sub *redis.PubSub) {
+func (r *Service) SubscribeToRoom(room string) (sub *redis.PubSub) {
 	ctx := context.Background()
 	sub = r.repo.Sub.Subscribe(ctx, room)
 	return
 }
 
-func (r *Room) PublishToRoom(room, data string) (err error) {
+func (r *Service) PublishToRoom(room, data string) (err error) {
 	ctx := context.Background()
 	err = r.repo.Pub.Publish(ctx, room, data).Err()
 	return
 }
 
-func (r *Room) GetRoomData(room, data string) (roomData *entity.RoomData, err error) {
+func (r *Service) GetRoomData(room, data string) (roomData *entity.RoomData, err error) {
 	ctx := context.Background()
 	res := r.repo.Pub.Get(ctx, room)
 	if res.Err() != nil {
@@ -92,7 +90,7 @@ func (r *Room) GetRoomData(room, data string) (roomData *entity.RoomData, err er
 	return
 }
 
-func (r *Room) CreateRoomData(room, name string) (roomData *entity.RoomData, err error) {
+func (r *Service) CreateRoomData(room, name string) (roomData *entity.RoomData, err error) {
 	users := map[string]entity.User{
 		name: {
 			Name: name,
@@ -117,7 +115,7 @@ func (r *Room) CreateRoomData(room, name string) (roomData *entity.RoomData, err
 	return
 }
 
-func (r *Room) AddRoomData(room string, user entity.User, oldRoom *entity.RoomData) (roomData *entity.RoomData, err error) {
+func (r *Service) AddRoomData(room string, user entity.User, oldRoom *entity.RoomData) (roomData *entity.RoomData, err error) {
 	users := oldRoom.Users
 	users[user.Name] = user
 	oldRoom.Users = users
@@ -138,7 +136,7 @@ func (r *Room) AddRoomData(room string, user entity.User, oldRoom *entity.RoomDa
 	return
 }
 
-func (r *Room) RemoveUser(room, name string) (err error) {
+func (r *Service) RemoveUser(room, name string) (err error) {
 	roomData, err := r.GetRoomData(room, name)
 	if err != nil {
 		err = fmt.Errorf("remove: %v", err)
@@ -168,7 +166,7 @@ func (r *Room) RemoveUser(room, name string) (err error) {
 	return
 }
 
-func (r *Room) CalculateGame(users map[string]entity.User) (valid bool) {
+func (r *Service) CalculateGame(users map[string]entity.User) (valid bool) {
 	for _, user := range users {
 		if user.Hand == nil {
 			valid = false
@@ -179,7 +177,7 @@ func (r *Room) CalculateGame(users map[string]entity.User) (valid bool) {
 	return
 }
 
-func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string) {
+func (r *Service) ReadMessage(ctx context.Context, ws *websocket.Conn, room string) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -218,7 +216,7 @@ func (r *Room) ReadMessage(ctx context.Context, ws *websocket.Conn, room string)
 	}
 }
 
-func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan *redis.Message) {
+func (r *Service) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan *redis.Message) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -229,7 +227,7 @@ func (r *Room) WriteMessage(ctx context.Context, ws *websocket.Conn, chn <-chan 
 	}
 }
 
-func (r *Room) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocket.Conn, ticker *time.Ticker, room, name string) {
+func (r *Service) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocket.Conn, ticker *time.Ticker, room, name string) {
 	defer func() {
 		r.RemoveUser(room, name)
 		fmt.Printf("%s disconected\n", name)
@@ -238,7 +236,7 @@ func (r *Room) Ping(ctx context.Context, cancel context.CancelFunc, ws *websocke
 	for {
 		select {
 		case <-ticker.C:
-			ws.SetWriteDeadline(time.Now().Add(constant.WriteWait))
+			ws.SetWriteDeadline(time.Now().Add(WriteWait))
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}

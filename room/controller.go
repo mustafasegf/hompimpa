@@ -1,4 +1,4 @@
-package controller
+package room
 
 import (
 	"context"
@@ -7,23 +7,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/mustafasegf/hompimpa/constant"
-	"github.com/mustafasegf/hompimpa/service"
 )
 
-type Room struct {
-	svc  *service.Room
+type Controller struct {
+	svc  *Service
 	upgr websocket.Upgrader
 }
 
-func NewRoomController(svc *service.Room, upgr websocket.Upgrader) *Room {
-	return &Room{
+func NewController(svc *Service, upgr websocket.Upgrader) *Controller {
+	return &Controller{
 		svc:  svc,
 		upgr: upgr,
 	}
 }
 
-func (ctrl *Room) CreateRoom(ctx *gin.Context) {
+func (ctrl *Controller) CreateRoom(ctx *gin.Context) {
 	room := ""
 	exist := true
 	var err error
@@ -39,7 +37,7 @@ func (ctrl *Room) CreateRoom(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"room": room})
 }
 
-func (ctrl *Room) Connect(ctx *gin.Context) {
+func (ctrl *Controller) Connect(ctx *gin.Context) {
 	room := ctx.Param("room")
 	if len(room) != 6 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "wrong length"})
@@ -55,7 +53,7 @@ func (ctrl *Room) Connect(ctx *gin.Context) {
 	sub := ctrl.svc.SubscribeToRoom(room)
 	chn := sub.Channel()
 
-	ticker := time.NewTicker(constant.PingPeriod)
+	ticker := time.NewTicker(PingPeriod)
 	c := context.Background()
 	c, cancel := context.WithCancel(c)
 	defer func() {
