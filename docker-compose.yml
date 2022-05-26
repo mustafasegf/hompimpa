@@ -9,6 +9,7 @@ services:
 
   server:
     container_name: server-hompimpa
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
